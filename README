@@ -1,0 +1,60 @@
+
+This is an extension of Daniel Barlow's ref setf-expander which can be
+found here:
+<https://ww.telent.net/2005/2/19/i_feel_compelled_to_share_this_just_because_it_took_so_long>. Note
+that in the current version of Dan's blog, the #\@ characters are missing from the code. I fixed those.
+
+Now we can do:
+
+  (let (l) (setf (ref:ref l :animal) "Monkey") l)
+
+and get:
+
+  (:ANIMAL "Monkey")
+
+Taking things to the next level, we can do:
+
+(let (l)
+  (setf (ref:ref l :animal :monkey :name) "Charlie")
+  (setf (ref:ref l :animal :dog :name) "Tucker")
+  (setf (ref:ref l :animal :horse :name) "Jonesy")
+  l)
+
+and we get:
+
+  (:ANIMAL
+    (:HORSE (:NAME "Jonesy") :DOG (:NAME "Tucker") :MONKEY (:NAME "Charlie")))
+
+If we do:
+
+  (defvar *farm* nil)
+
+  (setf (ref:ref *farm* :animal :monkey :name) "Charlie"
+        (ref:ref *farm* :animal :dog :name) "Tucker"
+        (ref:ref *farm* :animal :horse :name) "Jonesy")
+
+We can get the horses name by doing:
+
+  (ref:ref *farm* :animal :horse :name)
+
+and we get:
+
+  "Jonesy"
+
+
+ 
+I have also created a hash-ref setf-expander which can be used as follows:
+
+  (let (l) (setf (ref:hash-ref l :animal) "Monkey") l)
+
+Evaluating the following:
+
+  (let (l) (setf (ref:hash-ref l :animal) "Monkey")
+     (maphash (lambda (k v) (print (list k v))) l))
+
+Yields the following:
+
+  (:ANIMAL "Monkey")
+
+As before, these can be arbitrarily nested.
+
